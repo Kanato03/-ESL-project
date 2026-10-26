@@ -53,22 +53,20 @@
 #include "nrf_delay.h"
 #include "boards.h"
 
-/* ID of the device (the number on the label after '#'). Change it to yours. */
-#define DEVICE_ID 4321
+#define DEVICE_ID 6598
 
-/* Number of decimal digits in DEVICE_ID, and thus the number of LEDs used. */
 #define ID_DIGITS 4
 
-#define BLINK_ON_MS     300   /* LED is lit */
-#define BLINK_OFF_MS    300   /* pause between two blinks of the same LED */
-#define LED_PAUSE_MS    1000  /* pause between two different LEDs */
-#define CYCLE_PAUSE_MS  2500  /* pause before the whole sequence repeats */
+#define BLINK_ON_MS     300
+#define BLINK_OFF_MS    300
+#define LED_PAUSE_MS    1000 
+#define CYCLE_PAUSE_MS  2500 
 
 /**
- * @brief Blink one LED the given number of times.
+ * @brief
  *
- * @param led_idx Board LED index (0 .. LEDS_NUMBER - 1).
- * @param times   How many times to blink. 0 means the LED stays dark.
+ * @param led_idx
+ * @param times
  */
 static void blink_led(uint32_t led_idx, uint32_t times)
 {
@@ -82,14 +80,13 @@ static void blink_led(uint32_t led_idx, uint32_t times)
 }
 
 /**
- * @brief Function for application main entry.
+ * @brief
  */
 int main(void)
 {
-    /* Configure board. */
+
     bsp_board_init(BSP_INIT_LEDS);
 
-    /* Split DEVICE_ID into digits: digits[0] is the first (thousands) digit. */
     uint32_t digits[ID_DIGITS];
     uint32_t id = DEVICE_ID;
     for (int i = ID_DIGITS - 1; i >= 0; i--)
@@ -98,8 +95,6 @@ int main(void)
         id /= 10;
     }
 
-    /* Digit N is the blink count of LED N: 1st - yellow/green, 2nd - red,
-     * 3rd - green, 4th - blue. */
     while (true)
     {
         for (uint32_t led = 0; led < ID_DIGITS; led++)

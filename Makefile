@@ -1,17 +1,16 @@
 PROJECT_NAME     := blinky_estc
-TARGETS          := nrf52840_xxaa
+TARGETS          := nrf52840_6598
 OUTPUT_DIRECTORY := _build
-DFU_PACKAGE      := $(OUTPUT_DIRECTORY)/nrf52840_xxaa.dfu
+DFU_PACKAGE      := $(OUTPUT_DIRECTORY)/nrf52840_6598.dfu
 DFU_PORT         ?= /dev/ttyACM0
 
 
 SDK_ROOT ?= $(HOME)/dev/ESL-NSDK
 PROJ_DIR := .
 
-$(OUTPUT_DIRECTORY)/nrf52840_xxaa.out: \
+$(OUTPUT_DIRECTORY)/nrf52840_6598.out: \
   LINKER_SCRIPT  := blinky_gcc_nrf52.ld
 
-# Source files common to all targets
 SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52840.S \
   $(SDK_ROOT)/components/libraries/log/src/nrf_log_frontend.c \
@@ -33,7 +32,6 @@ SRC_FILES += \
   $(PROJ_DIR)/main.c \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52840.c \
 
-# Include folders common to all targets
 INC_FOLDERS += \
   $(SDK_ROOT)/components \
   $(SDK_ROOT)/modules/nrfx/mdk \
@@ -59,15 +57,10 @@ INC_FOLDERS += \
   $(SDK_ROOT)/external/fprintf \
   $(SDK_ROOT)/components/libraries/log/src \
 
-# Libraries common to all targets
 LIB_FILES += \
 
-# Optimization flags
 OPT = -O3 -g3
-# Uncomment the line below to enable link time optimization
-#OPT += -flto
 
-# C flags common to all targets
 CFLAGS += $(OPT)
 CFLAGS += -DBOARD_PCA10059
 CFLAGS += -DBSP_DEFINES_ONLY
@@ -79,13 +72,10 @@ CFLAGS += -mcpu=cortex-m4
 CFLAGS += -mthumb -mabi=aapcs
 CFLAGS += -Wall -Werror
 CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
-# keep every function in a separate section, this allows linker to discard unused ones
 CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing
 CFLAGS += -fno-builtin -fshort-enums
 
-# C++ flags common to all targets
 CXXFLAGS += $(OPT)
-# Assembler flags common to all targets
 ASMFLAGS += -g3
 ASMFLAGS += -mcpu=cortex-m4
 ASMFLAGS += -mthumb -mabi=aapcs
@@ -97,35 +87,28 @@ ASMFLAGS += -DFLOAT_ABI_HARD
 ASMFLAGS += -DMBR_PRESENT
 ASMFLAGS += -DNRF52840_XXAA
 
-# Linker flags
 LDFLAGS += $(OPT)
 LDFLAGS += -mthumb -mabi=aapcs -L$(SDK_ROOT)/modules/nrfx/mdk -T$(LINKER_SCRIPT)
 LDFLAGS += -mcpu=cortex-m4
 LDFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
-# let linker dump unused sections
 LDFLAGS += -Wl,--gc-sections
-# use newlib in nano version
 LDFLAGS += --specs=nano.specs
 
-nrf52840_xxaa: CFLAGS += -D__HEAP_SIZE=8192
-nrf52840_xxaa: CFLAGS += -D__STACK_SIZE=8192
-nrf52840_xxaa: ASMFLAGS += -D__HEAP_SIZE=8192
-nrf52840_xxaa: ASMFLAGS += -D__STACK_SIZE=8192
+nrf52840_6598: CFLAGS += -D__HEAP_SIZE=8192
+nrf52840_6598: CFLAGS += -D__STACK_SIZE=8192
+nrf52840_6598: ASMFLAGS += -D__HEAP_SIZE=8192
+nrf52840_6598: ASMFLAGS += -D__STACK_SIZE=8192
 
-# Add standard libraries at the very end of the linker input, after all objects
-# that may need symbols provided by these libraries.
 LIB_FILES += -lc -lnosys -lm
 
 
 .PHONY: default help
 
-# Default target - first one defined
-default: nrf52840_xxaa
+default: nrf52840_6598
 
-# Print all targets that can be built
 help:
 	@echo following targets are available:
-	@echo		nrf52840_xxaa
+	@echo		nrf52840_6598
 	@echo		flash      - flashing binary
 
 TEMPLATE_PATH := $(SDK_ROOT)/components/toolchain/gcc
@@ -139,7 +122,7 @@ $(foreach target, $(TARGETS), $(call define_target, $(target)))
 
 dfu_package: $(DFU_PACKAGE)
 
-$(DFU_PACKAGE): $(OUTPUT_DIRECTORY)/nrf52840_xxaa.hex
+$(DFU_PACKAGE): $(OUTPUT_DIRECTORY)/nrf52840_6598.hex
 	@echo Creating DFU package: $(DFU_PACKAGE)
 	nrfutil pkg generate \
 	   --hw-version 52 \
@@ -147,7 +130,7 @@ $(DFU_PACKAGE): $(OUTPUT_DIRECTORY)/nrf52840_xxaa.hex
 	   --sd-req 0x0,0x102 \
 	   --sd-id 0x102 \
 	   --application $< \
-	   --softdevice $(SDK_ROOT)/components/softdevice/s113/hex/s113_nrf52_7.2.0_softdevice.hex $@
+	   $@
 
 dfu: $(DFU_PACKAGE)
 	@echo Performing DFU with generated package
