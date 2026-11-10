@@ -3112,6 +3112,28 @@
 // </h> 
 //==========================================================
 
+// NRFX drivers used by main.c (PWM, GPIOTE, TIMER)
+#ifndef NRFX_PWM_ENABLED
+#define NRFX_PWM_ENABLED 1
+#endif
+#ifndef NRFX_PWM0_ENABLED
+#define NRFX_PWM0_ENABLED 1
+#endif
+#ifndef NRFX_GPIOTE_ENABLED
+#define NRFX_GPIOTE_ENABLED 1
+#endif
+#ifndef NRFX_GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS
+#define NRFX_GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS 1
+#endif
+#ifndef NRFX_GPIOTE_CONFIG_IRQ_PRIORITY
+#define NRFX_GPIOTE_CONFIG_IRQ_PRIORITY 6
+#endif
+#ifndef NRFX_TIMER_ENABLED
+#define NRFX_TIMER_ENABLED 1
+#endif
+#ifndef NRFX_TIMER1_ENABLED
+#define NRFX_TIMER1_ENABLED 1
+#endif
+
 // <<< end of configuration section >>>
 #endif //SDK_CONFIG_H
-
