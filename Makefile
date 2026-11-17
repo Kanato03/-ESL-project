@@ -227,5 +227,8 @@ $(DFU_PACKAGE): $(OUTPUT_DIRECTORY)/nrf52840_xxaa.hex
 dfu: $(DFU_PACKAGE)
 	@echo Performing DFU with generated package on $(DFU_PORT)
 	@$(NRFUTIL) dfu usb-serial -pkg $< -p $(DFU_PORT) -b 115200 || \
-	  ( echo "DFU failed, the device may be re-enumerating - retrying in 5 s" ; sleep 5 ; \
-	    $(NRFUTIL) dfu usb-serial -pkg $< -p $(DFU_PORT) -b 115200 )
+	  ( echo "DFU failed, the dongle re-enumerates into its bootloader - retrying" ; sleep 5 ; \
+	    PORT=`ls -t /dev/ttyACM* 2>/dev/null | head -1` ; \
+	    echo "Retrying on $$PORT" ; \
+	    $(NRFUTIL) dfu usb-serial -pkg $< -p $$PORT -b 115200 )
+
