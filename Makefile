@@ -2,7 +2,13 @@ PROJECT_NAME     := blinky_estc
 TARGETS          := nrf52840_xxaa
 OUTPUT_DIRECTORY := _build
 DFU_PACKAGE      := $(OUTPUT_DIRECTORY)/nrf52840_xxaa.dfu
-DFU_PORT         ?= /dev/ttyACM0
+# The dongle re-enumerates over USB and the kernel then hands out ttyACM1,
+# ttyACM2, ... instead of ttyACM0. Pick the most recently created node.
+DFU_PORT_FOUND   := $(shell ls -t /dev/ttyACM* 2>/dev/null | head -1)
+DFU_PORT         ?= $(if $(DFU_PORT_FOUND),$(DFU_PORT_FOUND),/dev/ttyACM0)
+# nrfutil is installed by pip into ~/.local/bin, which is not always on PATH
+# (non-interactive shells, fresh SSH sessions).
+NRFUTIL          ?= $(if $(shell command -v nrfutil 2>/dev/null),nrfutil,$(HOME)/.local/bin/nrfutil)
 
 
 SDK_ROOT ?= $(HOME)/dev/ESL-NSDK
@@ -211,7 +217,7 @@ dfu_package: $(DFU_PACKAGE)
 
 $(DFU_PACKAGE): $(OUTPUT_DIRECTORY)/nrf52840_xxaa.hex
 	@echo Creating DFU package: $(DFU_PACKAGE)
-	nrfutil pkg generate \
+	$(NRFUTIL) pkg generate \
 	   --hw-version 52 \
 	   --application-version 20 \
 	   --sd-req 0x0,0x102 \
@@ -219,5 +225,7 @@ $(DFU_PACKAGE): $(OUTPUT_DIRECTORY)/nrf52840_xxaa.hex
 	   $@
 
 dfu: $(DFU_PACKAGE)
-	@echo Performing DFU with generated package
-	nrfutil dfu usb-serial -pkg $< -p $(DFU_PORT) -b 115200
+	@echo Performing DFU with generated package on $(DFU_PORT)
+	@$(NRFUTIL) dfu usb-serial -pkg $< -p $(DFU_PORT) -b 115200 || \
+	  ( echo "DFU failed, the device may be re-enumerating - retrying in 5 s" ; sleep 5 ; \
+	    $(NRFUTIL) dfu usb-serial -pkg $< -p $(DFU_PORT) -b 115200 )
