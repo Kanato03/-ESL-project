@@ -1,52 +1,9 @@
-/**
- * Copyright (c) 2014 - 2021, Nordic Semiconductor ASA
- *
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * 2. Redistributions in binary form, except in the form of a compiled
- * executable, must reproduce the above copyright notice, this list of
- * conditions and the following disclaimer in the documentation and/or other
- * materials provided with the distribution.
- *
- * 3. Neither the name of the copyright holder nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * 4. This software, with or without modification, must only be used on
- * hardware or software products from Nordic Semiconductor ASA.
- *
- * 5. Any software provided in binary form under this license must not be
- * reverse engineered, decompiled, disassembled or otherwise used to discover
- * the underlying algorithms, source code, or other intellectual property of
- * Nordic Semiconductor ASA or any other third party.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
- */
-
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 #include "nrf.h"
 #include "app_board.h"
-#include "pwm_ctrl.h"
-#include "fade_ctrl.h"
+#include "led_ctrl.h"
 #include "timer_ctrl.h"
 #include "button_ctrl.h"
 #include "app_error.h"
@@ -55,9 +12,14 @@
 #include "nrf_log_default_backends.h"
 #include "nrf_log_backend_usb.h"
 #include "app_usbd.h"
+#include "nrf_delay.h"
 #include "app_usbd_serial_num.h"
 
 extern uint32_t __isr_vector;
+extern volatile bool g_fade_state_changed; // Берем флаг из led_ctrl.c
+extern volatile bool g_fade_state_changed;
+extern volatile bool g_led_changed;
+extern volatile uint8_t g_active_led;
 
 static void vector_table_setup(void)
 {
@@ -102,19 +64,39 @@ int main(void)
     gpio_output_voltage_setup();
     logs_init();
 
-    fade_ctrl_init();
-
-    NRF_LOG_INFO("Lab 3 started: device id %d, sequence length %d",
-                 DEVICE_ID, fade_ctrl_sequence_len());
-
-    pwm_ctrl_init();
+    led_ctrl_init();
     timer_ctrl_init();
     button_ctrl_init();
 
+    NRF_LOG_INFO("Lab 3 started. Device ID: %d", DEVICE_ID);
     while (true)
     {
+        // 1. Вывод смены состояния мигания
+        if (g_fade_state_changed)
+        {
+            g_fade_state_changed = false;
+            
+            if (led_ctrl_is_blinking())
+            {
+                NRF_LOG_INFO("Double click: STARTED");
+            }
+            else
+            {
+                NRF_LOG_INFO("Double click: FROZEN");
+            }
+        }
+
+        // 2. Вывод смены светодиода
+        if (g_led_changed)
+        {
+            g_led_changed = false;
+            NRF_LOG_INFO("Next LED: %d", g_active_led); 
+        }
+
         LOG_BACKEND_USB_PROCESS();
         NRF_LOG_PROCESS();
-        __WFI();
+        
+        // Задержка, чтобы логи успевали уходить в USB
+        for(volatile int i=0; i<10000; i++); 
     }
 }

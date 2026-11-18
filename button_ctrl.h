@@ -1,8 +1,8 @@
-#ifndef BUTTON_CTRL_H__
-#define BUTTON_CTRL_H__
+#ifndef BUTTON_CTRL_H
+#define BUTTON_CTRL_H
 
-#define DEBOUNCE_MS          20
-#define DOUBLE_CLICK_MS      500
+#define DEBOUNCE_MS     150   // 50 мс более чем достаточно для этой кнопки
+#define DOUBLE_CLICK_MS 300
 
 void button_ctrl_init(void);
 

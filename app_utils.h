@@ -1,5 +1,5 @@
-#ifndef APP_UTILS_H__
-#define APP_UTILS_H__
+#ifndef APP_UTILS_H
+#define APP_UTILS_H
 
 #include <stdbool.h>
 #include "nrfx.h"

@@ -1,9 +1,8 @@
-#ifndef TIMER_CTRL_H__
-#define TIMER_CTRL_H__
+#ifndef TIMER_CTRL_H
+#define TIMER_CTRL_H
 
 #include <stdint.h>
-
-#define TICK_MS              1
+#include "nrfx_timer.h"
 
 void timer_ctrl_init(void);
 uint32_t timer_ctrl_ms(void);

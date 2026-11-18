@@ -69,8 +69,7 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_pwm.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_gpiote.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_timer.c \
-  $(PROJ_DIR)/pwm_ctrl.c \
-  $(PROJ_DIR)/fade_ctrl.c \
+  $(PROJ_DIR)/led_ctrl.c \
   $(PROJ_DIR)/timer_ctrl.c \
   $(PROJ_DIR)/button_ctrl.c \
   $(PROJ_DIR)/main.c \

@@ -1,46 +1,37 @@
 #include "button_ctrl.h"
 #include "app_board.h"
 #include "app_utils.h"
-#include "fade_ctrl.h"
+#include "led_ctrl.h"
 #include "timer_ctrl.h"
 #include "nrf_gpio.h"
 #include "nrfx_gpiote.h"
-#include "nrf_log.h"
 
-static volatile uint32_t m_last_edge_ms;
-static volatile uint32_t m_first_click_ms;
-static volatile bool     m_first_click_done;
-static volatile bool     m_button_pressed;
+static volatile uint32_t m_last_press_ms = 0;
+static volatile uint32_t m_first_click_ms = 0;
+static volatile bool     m_waiting_for_second = false;
 
 static void button_event_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
 {
-    (void)pin;
-    (void)action;
+    // Проверяем, что кнопка действительно нажата (активный уровень 0)
+    if (nrf_gpio_pin_read(BUTTON_PIN) != BUTTON_ACTIVE_LEVEL) return;
 
     uint32_t now = timer_ctrl_ms();
-    bool quiet_before = ((uint32_t)(now - m_last_edge_ms) >= DEBOUNCE_MS);
-    m_last_edge_ms = now;
 
-    if (!quiet_before)
-    {
-        return;
-    }
+    // 1. Антидребезг (игнорируем отскоки контактов)
+    if ((uint32_t)(now - m_last_press_ms) < DEBOUNCE_MS) return;
+    m_last_press_ms = now;
 
-    m_button_pressed = !m_button_pressed;
-    if (!m_button_pressed)
+    // 2. Логика двойного клика
+    if (m_waiting_for_second && (uint32_t)(now - m_first_click_ms) <= DOUBLE_CLICK_MS)
     {
-        return;
-    }
-    NRF_LOG_INFO("Button pressed");
-
-    if (m_first_click_done && (uint32_t)(now - m_first_click_ms) <= DOUBLE_CLICK_MS)
-    {
-        m_first_click_done = false;
-        fade_ctrl_toggle();
+        // Мы ждали второй клик, и он пришел вовремя!
+        led_ctrl_toggle();
+        m_waiting_for_second = false; // Сбрасываем ожидание
     }
     else
     {
-        m_first_click_done = true;
+        // Это первый клик (или прошло больше 500 мс, и это новый первый клик)
+        m_waiting_for_second = true;
         m_first_click_ms = now;
     }
 }
@@ -49,10 +40,13 @@ void button_ctrl_init(void)
 {
     app_error_check(nrfx_gpiote_init());
 
-    nrfx_gpiote_in_config_t config = NRFX_GPIOTE_CONFIG_IN_SENSE_TOGGLE(true);
+    // Прерывание только по нажатию (High-to-Low)
+    nrfx_gpiote_in_config_t config = NRFX_GPIOTE_CONFIG_IN_SENSE_HITOLO(true);
     config.pull = NRF_GPIO_PIN_PULLUP;
 
     app_error_check(nrfx_gpiote_in_init(BUTTON_PIN, &config, button_event_handler));
     nrfx_gpiote_in_event_enable(BUTTON_PIN, true);
-    m_button_pressed = (nrf_gpio_pin_read(BUTTON_PIN) == BUTTON_ACTIVE_LEVEL);
+
+    // ВАЖНО: Инициализируем время последнего нажатия, чтобы первый клик после включения не игнорировался
+    m_last_press_ms = timer_ctrl_ms();
 }

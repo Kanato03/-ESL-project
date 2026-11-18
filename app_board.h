@@ -1,35 +1,33 @@
-#ifndef APP_BOARD_H__
-#define APP_BOARD_H__
+#ifndef APP_BOARD_H
+#define APP_BOARD_H
 
 #include "nrf_gpio.h"
 
-#ifndef DEVICE_ID
 #define DEVICE_ID 6598
-#endif
 
-#define LEDS_NUMBER     4
+#define LEDS_NUMBER 4
 
-#define LED1_G_PORT     0
-#define LED1_G_NUM      6
-#define LED2_R_PORT     0
-#define LED2_R_NUM      8
-#define LED2_G_PORT     1
-#define LED2_G_NUM      9
-#define LED2_B_PORT     0
-#define LED2_B_NUM      12
-#define BUTTON_PORT     1
-#define BUTTON_NUM      6
+#define LED1_G_PORT 0
+#define LED1_G_NUM  6
+#define LED2_R_PORT 0
+#define LED2_R_NUM  8
+#define LED2_G_PORT 1
+#define LED2_G_NUM  9
+#define LED2_B_PORT 0
+#define LED2_B_NUM  12
+#define BUTTON_PORT 1
+#define BUTTON_NUM  6
 
-#define LED1_G_PIN      NRF_GPIO_PIN_MAP(LED1_G_PORT, LED1_G_NUM)
-#define LED2_R_PIN      NRF_GPIO_PIN_MAP(LED2_R_PORT, LED2_R_NUM)
-#define LED2_G_PIN      NRF_GPIO_PIN_MAP(LED2_G_PORT, LED2_G_NUM)
-#define LED2_B_PIN      NRF_GPIO_PIN_MAP(LED2_B_PORT, LED2_B_NUM)
-#define BUTTON_PIN      NRF_GPIO_PIN_MAP(BUTTON_PORT, BUTTON_NUM)
+#define LED1_G_PIN  NRF_GPIO_PIN_MAP(LED1_G_PORT, LED1_G_NUM)
+#define LED2_R_PIN  NRF_GPIO_PIN_MAP(LED2_R_PORT, LED2_R_NUM)
+#define LED2_G_PIN  NRF_GPIO_PIN_MAP(LED2_G_PORT, LED2_G_NUM)
+#define LED2_B_PIN  NRF_GPIO_PIN_MAP(LED2_B_PORT, LED2_B_NUM)
+#define BUTTON_PIN  NRF_GPIO_PIN_MAP(BUTTON_PORT, BUTTON_NUM)
 
-#define BUTTON_ACTIVE_LEVEL  0
+#define BUTTON_ACTIVE_LEVEL 0
 
-#define PWM_INSTANCE_ID    0
-#define TIMER_INSTANCE_ID  1
-#define IRQ_PRIORITY       6
+#define PWM_INSTANCE_ID 0
+#define TIMER_INSTANCE_ID 1
+#define IRQ_PRIORITY 6
 
 #endif
