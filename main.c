@@ -16,7 +16,7 @@
 #include "app_usbd_serial_num.h"
 
 extern uint32_t __isr_vector;
-extern volatile bool g_fade_state_changed; // Берем флаг из led_ctrl.c
+extern volatile bool g_fade_state_changed; 
 extern volatile bool g_fade_state_changed;
 extern volatile bool g_led_changed;
 extern volatile uint8_t g_active_led;

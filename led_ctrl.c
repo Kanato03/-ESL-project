@@ -104,7 +104,6 @@ void led_ctrl_step(void)
         active_led = m_sequence[m_sequence_pos];
         g_active_led = active_led; 
         g_led_changed = true;
-        // ЛОГ УДАЛЕН ОТСЮДА
     }
 
     channels[active_led] = m_duty;
@@ -116,7 +115,6 @@ void led_ctrl_toggle(void)
 
     m_blinking = !m_blinking;
     g_fade_state_changed = true;
-    // ЛОГ УДАЛЕН ОТСЮДА
 }
 
 bool led_ctrl_is_blinking(void)
