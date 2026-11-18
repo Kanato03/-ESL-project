@@ -19,12 +19,11 @@ static volatile uint32_t m_sequence_pos;
 static volatile uint16_t m_duty;
 static volatile bool     m_fade_rising;
 static volatile bool     m_blinking;
-static uint8_t           m_sequence[64]; // УВЕЛИЧИЛИ РАЗМЕР (было 16)
+static uint8_t           m_sequence[64];
 static uint32_t          m_sequence_len;
 volatile bool     g_led_changed = false;
 volatile uint8_t  g_active_led = 0;
 
-// Флаг для main.c, чтобы логировать состояние вне прерывания
 volatile bool g_fade_state_changed = false; 
 
 static void sequence_build(void)
@@ -116,11 +115,10 @@ void led_ctrl_toggle(void)
     if (m_sequence_len == 0) return;
 
     m_blinking = !m_blinking;
-    g_fade_state_changed = true; // Сообщаем main.c, что состояние изменилось
+    g_fade_state_changed = true;
     // ЛОГ УДАЛЕН ОТСЮДА
 }
 
-// Функция для main.c, чтобы узнать текущее состояние
 bool led_ctrl_is_blinking(void)
 {
     return m_blinking;

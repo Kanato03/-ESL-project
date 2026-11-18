@@ -12,7 +12,6 @@ static void timer_event_handler(nrf_timer_event_t event_type, void * p_context)
     {
         m_time_ms += 10;
         led_ctrl_step();
-        // Вызов button_ctrl_on_tick() УДАЛЕН, он больше не нужен
     }
 }
 

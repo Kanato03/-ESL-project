@@ -71,7 +71,7 @@ int main(void)
     NRF_LOG_INFO("Lab 3 started. Device ID: %d", DEVICE_ID);
     while (true)
     {
-        // 1. Вывод смены состояния мигания
+
         if (g_fade_state_changed)
         {
             g_fade_state_changed = false;
@@ -86,7 +86,6 @@ int main(void)
             }
         }
 
-        // 2. Вывод смены светодиода
         if (g_led_changed)
         {
             g_led_changed = false;
@@ -95,8 +94,7 @@ int main(void)
 
         LOG_BACKEND_USB_PROCESS();
         NRF_LOG_PROCESS();
-        
-        // Задержка, чтобы логи успевали уходить в USB
+
         for(volatile int i=0; i<10000; i++); 
     }
 }
