@@ -2,6 +2,7 @@
 #include "app_board.h"
 #include "app_utils.h"
 #include "led_ctrl.h"
+#include "button_ctrl.h"
 
 static nrfx_timer_t m_timer = NRFX_TIMER_INSTANCE(TIMER_INSTANCE_ID);
 static volatile uint32_t m_time_ms = 0;
@@ -10,8 +11,9 @@ static void timer_event_handler(nrf_timer_event_t event_type, void * p_context)
 {
     if (event_type == NRF_TIMER_EVENT_COMPARE0)
     {
-        m_time_ms += 10;
+        m_time_ms += TICK_MS;
         led_ctrl_step();
+        button_ctrl_on_tick();
     }
 }
 
@@ -27,7 +29,8 @@ void timer_ctrl_init(void)
     };
 
     app_error_check(nrfx_timer_init(&m_timer, &config, timer_event_handler));
-    uint32_t ticks = nrfx_timer_ms_to_ticks(&m_timer, FADE_STEP_MS);
+
+    uint32_t ticks = nrfx_timer_ms_to_ticks(&m_timer, TICK_MS);
     nrfx_timer_extended_compare(&m_timer, NRF_TIMER_CC_CHANNEL0, ticks, NRF_TIMER_SHORT_COMPARE0_CLEAR_MASK, true);
     nrfx_timer_enable(&m_timer);
 }
