@@ -1,8 +1,8 @@
 #include "timer_ctrl.h"
 #include "app_board.h"
 #include "app_utils.h"
-#include "led_ctrl.h"
 #include "button_ctrl.h"
+#include "color_picker.h"
 
 static nrfx_timer_t m_timer = NRFX_TIMER_INSTANCE(TIMER_INSTANCE_ID);
 static volatile uint32_t m_time_ms = 0;
@@ -12,8 +12,8 @@ static void timer_event_handler(nrf_timer_event_t event_type, void * p_context)
     if (event_type == NRF_TIMER_EVENT_COMPARE0)
     {
         m_time_ms += TICK_MS;
-        led_ctrl_step();
         button_ctrl_on_tick();
+        color_picker_on_tick(button_ctrl_is_held());
     }
 }
 

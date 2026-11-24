@@ -12,6 +12,11 @@ NRFUTIL          ?= $(if $(shell command -v nrfutil 2>/dev/null),nrfutil,$(HOME)
 
 
 SDK_ROOT ?= $(HOME)/dev/ESL-NSDK
+
+SOFTDEVICE_DIR   := $(SDK_ROOT)/components/softdevice/s113
+SOFTDEVICE_HEX   := $(SOFTDEVICE_DIR)/hex/s113_nrf52_7.2.0_softdevice.hex
+SD_FWID          := 0x102
+DFU_SD_PACKAGE   := $(OUTPUT_DIRECTORY)/s113_7.2.0.dfu
 PROJ_DIR := .
 
 $(OUTPUT_DIRECTORY)/nrf52840_xxaa.out: \
@@ -29,7 +34,6 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_uart.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_usbd.c \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52840.c \
-  $(SDK_ROOT)/components/libraries/bsp/bsp.c \
   $(SDK_ROOT)/components/libraries/log/src/nrf_log_frontend.c \
   $(SDK_ROOT)/components/libraries/log/src/nrf_log_str_formatter.c \
   $(SDK_ROOT)/components/libraries/log/src/nrf_log_default_backends.c \
@@ -69,6 +73,11 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_pwm.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_gpiote.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_timer.c \
+  $(SDK_ROOT)/components/softdevice/common/nrf_sdh.c \
+  $(SDK_ROOT)/components/softdevice/common/nrf_sdh_soc.c \
+  $(SDK_ROOT)/components/libraries/experimental_section_vars/nrf_section_iter.c \
+  $(PROJ_DIR)/color.c \
+  $(PROJ_DIR)/color_picker.c \
   $(PROJ_DIR)/led_ctrl.c \
   $(PROJ_DIR)/timer_ctrl.c \
   $(PROJ_DIR)/button_ctrl.c \
@@ -76,6 +85,9 @@ SRC_FILES += \
 
 # Include folders common to all targets
 INC_FOLDERS += \
+  $(SOFTDEVICE_DIR)/headers \
+  $(SOFTDEVICE_DIR)/headers/nrf52 \
+  $(SDK_ROOT)/components/softdevice/common \
   $(PROJ_DIR) \
   $(SDK_ROOT)/components/libraries/fifo \
   $(SDK_ROOT)/components/libraries/pwm \
@@ -85,8 +97,6 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/libraries/mutex \
   $(SDK_ROOT)/external/fnmatch \
   $(SDK_ROOT)/external/nrf_oberon/include \
-  $(SDK_ROOT)/components/drivers_nrf/nrf_soc_nosd \
-  $(SDK_ROOT)/components/boards \
   $(SDK_ROOT)/external/utf_converter \
   $(SDK_ROOT)/modules/nrfx/drivers/include \
   $(SDK_ROOT)/components/libraries/cli \
@@ -97,7 +107,6 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/libraries/crypto \
   $(SDK_ROOT)/components/libraries/hardfault/nrf52 \
   $(SDK_ROOT)/components/libraries/cli/uart \
-  $(SDK_ROOT)/components/libraries/bsp \
   $(SDK_ROOT)/components/libraries/crypto/backend/nrf_hw \
   $(SDK_ROOT)/components/libraries/mpu \
   $(SDK_ROOT)/components/libraries/experimental_section_vars \
@@ -143,10 +152,12 @@ CFLAGS += $(OPT)
 CFLAGS += -DUSE_APP_CONFIG
 CFLAGS += -DAPP_TIMER_V2
 CFLAGS += -DAPP_TIMER_V2_RTC1_ENABLED
-CFLAGS += -DBOARD_PCA10059
 CFLAGS += -DCONFIG_GPIO_AS_PINRESET
 CFLAGS += -DFLOAT_ABI_HARD
 CFLAGS += -DMBR_PRESENT
+CFLAGS += -DS113
+CFLAGS += -DSOFTDEVICE_PRESENT
+CFLAGS += -DNRF_SD_BLE_API_VERSION=7
 CFLAGS += -DNRF52840_XXAA
 CFLAGS += -mcpu=cortex-m4
 CFLAGS += -mthumb -mabi=aapcs
@@ -166,10 +177,12 @@ ASMFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 ASMFLAGS += -DUSE_APP_CONFIG
 ASMFLAGS += -DAPP_TIMER_V2
 ASMFLAGS += -DAPP_TIMER_V2_RTC1_ENABLED
-ASMFLAGS += -DBOARD_PCA10059
 ASMFLAGS += -DCONFIG_GPIO_AS_PINRESET
 ASMFLAGS += -DFLOAT_ABI_HARD
 ASMFLAGS += -DMBR_PRESENT
+ASMFLAGS += -DS113
+ASMFLAGS += -DSOFTDEVICE_PRESENT
+ASMFLAGS += -DNRF_SD_BLE_API_VERSION=7
 ASMFLAGS += -DNRF52840_XXAA
 
 # Linker flags
@@ -219,7 +232,7 @@ $(DFU_PACKAGE): $(OUTPUT_DIRECTORY)/nrf52840_xxaa.hex
 	$(NRFUTIL) pkg generate \
 	   --hw-version 52 \
 	   --application-version 20 \
-	   --sd-req 0x0,0x102 \
+	   --sd-req $(SD_FWID) \
 	   --application $< \
 	   $@
 
@@ -231,3 +244,17 @@ dfu: $(DFU_PACKAGE)
 	    echo "Retrying on $$PORT" ; \
 	    $(NRFUTIL) dfu usb-serial -pkg $< -p $$PORT -b 115200 )
 
+
+$(DFU_SD_PACKAGE): $(SOFTDEVICE_HEX)
+	@echo Creating DFU package: $(DFU_SD_PACKAGE)
+	$(NRFUTIL) pkg generate \
+	   --hw-version 52 \
+	   --sd-req 0x0 \
+	   --sd-id $(SD_FWID) \
+	   --softdevice $< \
+	   $@
+
+.PHONY: dfu_sd
+dfu_sd: $(DFU_SD_PACKAGE)
+	@echo Flashing SoftDevice S113 on $(DFU_PORT)
+	$(NRFUTIL) dfu usb-serial -pkg $< -p $(DFU_PORT) -b 115200

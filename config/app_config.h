@@ -127,4 +127,91 @@
 
 // </e>
 
+#ifdef SOFTDEVICE_PRESENT
+
+// <e> NRF_SDH_ENABLED - nrf_sdh - SoftDevice handler
+//==========================================================
+#ifndef NRF_SDH_ENABLED
+#define NRF_SDH_ENABLED 1
+#endif
+
+#ifndef NRF_SDH_DISPATCH_MODEL
+#define NRF_SDH_DISPATCH_MODEL 0
+#endif
+
+// <e> NRF_SDH_SOC_ENABLED - nrf_sdh_soc - SoftDevice SoC event handler
+//==========================================================
+#ifndef NRF_SDH_SOC_ENABLED
+#define NRF_SDH_SOC_ENABLED 1
+#endif
+
+// <e> NRF_SDH_BLE_ENABLED - nrf_sdh_ble - SoftDevice BLE event handler
+//==========================================================
+#ifndef NRF_SDH_BLE_ENABLED
+#define NRF_SDH_BLE_ENABLED 0
+#endif
+
+#ifndef NRF_SDH_SOC_STACK_OBSERVER_PRIO
+#define NRF_SDH_SOC_STACK_OBSERVER_PRIO 0
+#endif
+
+#ifndef NRF_SDH_SOC_OBSERVER_PRIO_LEVELS
+#define NRF_SDH_SOC_OBSERVER_PRIO_LEVELS 2
+#endif
+
+#ifndef NRF_SDH_REQ_OBSERVER_PRIO_LEVELS
+#define NRF_SDH_REQ_OBSERVER_PRIO_LEVELS 2
+#endif
+
+#ifndef NRF_SDH_STATE_OBSERVER_PRIO_LEVELS
+#define NRF_SDH_STATE_OBSERVER_PRIO_LEVELS 2
+#endif
+
+#ifndef NRF_SDH_STACK_OBSERVER_PRIO_LEVELS
+#define NRF_SDH_STACK_OBSERVER_PRIO_LEVELS 2
+#endif
+
+#ifndef NRF_SDH_CLOCK_LF_SRC
+#define NRF_SDH_CLOCK_LF_SRC 1
+#endif
+
+#ifndef NRF_SDH_CLOCK_LF_RC_CTIV
+#define NRF_SDH_CLOCK_LF_RC_CTIV 0
+#endif
+
+#ifndef NRF_SDH_CLOCK_LF_RC_TEMP_CTIV
+#define NRF_SDH_CLOCK_LF_RC_TEMP_CTIV 0
+#endif
+
+#ifndef NRF_SDH_CLOCK_LF_ACCURACY
+#define NRF_SDH_CLOCK_LF_ACCURACY 7
+#endif
+
+// <o> CLOCK_CONFIG_STATE_OBSERVER_PRIO
+//==========================================================
+#ifndef CLOCK_CONFIG_STATE_OBSERVER_PRIO
+#define CLOCK_CONFIG_STATE_OBSERVER_PRIO 0
+#endif
+
+// <o> CLOCK_CONFIG_SOC_OBSERVER_PRIO
+//==========================================================
+#ifndef CLOCK_CONFIG_SOC_OBSERVER_PRIO
+#define CLOCK_CONFIG_SOC_OBSERVER_PRIO 0
+#endif
+
+// <o> POWER_CONFIG_STATE_OBSERVER_PRIO
+//==========================================================
+#ifndef POWER_CONFIG_STATE_OBSERVER_PRIO
+#define POWER_CONFIG_STATE_OBSERVER_PRIO 0
+#endif
+
+// <o> POWER_CONFIG_SOC_OBSERVER_PRIO
+//==========================================================
+#ifndef POWER_CONFIG_SOC_OBSERVER_PRIO
+#define POWER_CONFIG_SOC_OBSERVER_PRIO 0
+#endif
+
+#endif
+
+
 #endif

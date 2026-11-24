@@ -5,8 +5,8 @@ GROUP(-lgcc -lc -lnosys)
 
 MEMORY
 {
-  FLASH (rx) : ORIGIN = 0x1000, LENGTH = 0xdf000
-  RAM (rwx) :  ORIGIN = 0x20000000, LENGTH = 0x40000
+  FLASH (rx) : ORIGIN = 0x1c000, LENGTH = 0xc4000
+  RAM (rwx) :  ORIGIN = 0x20002300, LENGTH = 0x3dd00
 }
 
 SECTIONS
@@ -39,6 +39,30 @@ SECTIONS
   .mem_section_dummy_rom :
   {
   }
+  .sdh_soc_observers :
+  {
+    PROVIDE(__start_sdh_soc_observers = .);
+    KEEP(*(SORT(.sdh_soc_observers*)))
+    PROVIDE(__stop_sdh_soc_observers = .);
+  } > FLASH
+  .sdh_req_observers :
+  {
+    PROVIDE(__start_sdh_req_observers = .);
+    KEEP(*(SORT(.sdh_req_observers*)))
+    PROVIDE(__stop_sdh_req_observers = .);
+  } > FLASH
+  .sdh_state_observers :
+  {
+    PROVIDE(__start_sdh_state_observers = .);
+    KEEP(*(SORT(.sdh_state_observers*)))
+    PROVIDE(__stop_sdh_state_observers = .);
+  } > FLASH
+  .sdh_stack_observers :
+  {
+    PROVIDE(__start_sdh_stack_observers = .);
+    KEEP(*(SORT(.sdh_stack_observers*)))
+    PROVIDE(__stop_sdh_stack_observers = .);
+  } > FLASH
   .log_const_data :
   {
     PROVIDE(__start_log_const_data = .);

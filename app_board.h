@@ -26,6 +26,11 @@
 
 #define BUTTON_ACTIVE_LEVEL 0
 
+#define PWM_CH_LED1   0
+#define PWM_CH_RED    1
+#define PWM_CH_GREEN  2
+#define PWM_CH_BLUE   3
+
 #define PWM_INSTANCE_ID 0
 #define TIMER_INSTANCE_ID 1
 #define IRQ_PRIORITY 6
