@@ -61,7 +61,7 @@ static void color_summary_log(void)
     NRF_LOG_INFO("===== Color =====");
     NRF_LOG_INFO("  Saturation: %d%%", hsv.s);
     NRF_LOG_INFO("  Brightness: %d%%", hsv.v);
-    NRF_LOG_INFO("  RGB:        (%d, %d, %d)", rgb.r, rgb.g, rgb.b);
+    NRF_LOG_INFO("  RGB:        (%d, %d, %d) (Hue: %d deg)", rgb.r, rgb.g, rgb.b, hsv.h);
 }
 
 static void setting_log(void)
@@ -71,7 +71,7 @@ static void setting_log(void)
 
     switch (color_picker_mode())
     {
-        case INPUT_MODE_HUE:        NRF_LOG_INFO("Hue -> RGB: (%d, %d, %d)", rgb.r, rgb.g, rgb.b); break;
+        case INPUT_MODE_HUE:        NRF_LOG_INFO("RGB: (%d, %d, %d) (Hue: %d deg)", rgb.r, rgb.g, rgb.b, hsv.h); break;
         case INPUT_MODE_SATURATION: NRF_LOG_INFO("Saturation: %d%%", hsv.s);   break;
         case INPUT_MODE_BRIGHTNESS: NRF_LOG_INFO("Brightness: %d%%", hsv.v);   break;
         default: break;
