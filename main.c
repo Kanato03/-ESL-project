@@ -1,3 +1,4 @@
+//Рабочая версия уже с логами
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
