@@ -32,7 +32,6 @@
 #define PWM_CH_BLUE   3
 
 #define PWM_INSTANCE_ID 0
-#define TIMER_INSTANCE_ID 1
 #define IRQ_PRIORITY 6
 
 #endif

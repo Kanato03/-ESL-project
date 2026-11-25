@@ -1,41 +1,15 @@
 #include "timer_ctrl.h"
-#include "app_board.h"
-#include "app_utils.h"
-#include "button_ctrl.h"
-#include "color_picker.h"
-
-static nrfx_timer_t m_timer = NRFX_TIMER_INSTANCE(TIMER_INSTANCE_ID);
-static volatile uint32_t m_time_ms = 0;
-
-static void timer_event_handler(nrf_timer_event_t event_type, void * p_context)
-{
-    if (event_type == NRF_TIMER_EVENT_COMPARE0)
-    {
-        m_time_ms += TICK_MS;
-        button_ctrl_on_tick();
-        color_picker_on_tick(button_ctrl_is_held());
-    }
-}
+#include "app_error.h"
+#include "nrf_drv_clock.h"
 
 void timer_ctrl_init(void)
 {
-    nrfx_timer_config_t const config =
+    ret_code_t err = nrf_drv_clock_init();
+    if (err != NRF_ERROR_MODULE_ALREADY_INITIALIZED)
     {
-        .frequency          = NRF_TIMER_FREQ_1MHz,
-        .mode               = NRF_TIMER_MODE_TIMER,
-        .bit_width          = NRF_TIMER_BIT_WIDTH_32,
-        .interrupt_priority = IRQ_PRIORITY,
-        .p_context          = NULL
-    };
+        APP_ERROR_CHECK(err);
+    }
+    nrf_drv_clock_lfclk_request(NULL);
 
-    app_error_check(nrfx_timer_init(&m_timer, &config, timer_event_handler));
-
-    uint32_t ticks = nrfx_timer_ms_to_ticks(&m_timer, TICK_MS);
-    nrfx_timer_extended_compare(&m_timer, NRF_TIMER_CC_CHANNEL0, ticks, NRF_TIMER_SHORT_COMPARE0_CLEAR_MASK, true);
-    nrfx_timer_enable(&m_timer);
-}
-
-uint32_t timer_ctrl_ms(void)
-{
-    return m_time_ms;
+    APP_ERROR_CHECK(app_timer_init());
 }
