@@ -10,5 +10,6 @@
 
 bool flash_storage_load(hsv_t * p_hsv);
 bool flash_storage_save(hsv_t hsv);
+void flash_storage_erase(void);
 
 #endif

@@ -17,6 +17,17 @@
 
 extern uint32_t __isr_vector;
 
+static volatile bool m_button_pressed = false;
+
+static void button_event_handler(button_event_t evt)
+{
+    if (evt == BUTTON_EVENT_PRESSED)
+    {
+        m_button_pressed = true;
+    }
+    color_picker_on_button(evt);
+}
+
 static void vector_table_setup(void)
 {
     SCB->VTOR = (uint32_t)&__isr_vector;
@@ -84,11 +95,17 @@ int main(void)
     vector_table_setup();
     gpio_output_voltage_setup();
     logs_init();
+    timer_ctrl_init();
+
+#ifdef ERASE_COLOR_ON_BOOT
+    // One-time cleanup build: make clean && make ERASE_COLOR=1 dfu
+    flash_storage_erase();
+    NRF_LOG_INFO("Saved color erased");
+#endif
 
     led_ctrl_init();
     color_picker_init();
-    timer_ctrl_init();
-    button_ctrl_init();
+    button_ctrl_init(button_event_handler);
 
     NRF_LOG_INFO("Workshop 6 started. Device ID: %d", DEVICE_ID);
     if (g_color_loaded)
@@ -109,9 +126,9 @@ int main(void)
             NRF_LOG_INFO("Input mode: %s", color_picker_mode_name(color_picker_mode()));
         }
 
-        if (g_button_pressed)
+        if (m_button_pressed)
         {
-            g_button_pressed = false;
+            m_button_pressed = false;
             NRF_LOG_INFO("Button pressed");
         }
 

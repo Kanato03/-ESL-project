@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include "color.h"
+#include "button_ctrl.h"
 
 #define HUE_STEP_MS          20
 #define SAT_BRIGHT_STEP_MS   30
@@ -22,7 +23,7 @@ typedef enum
 
 void color_picker_init(void);
 void color_picker_next_mode(void);
-void color_picker_on_tick(bool button_held);
+void color_picker_on_button(button_event_t evt);
 
 input_mode_t color_picker_mode(void);
 hsv_t color_picker_hsv(void);

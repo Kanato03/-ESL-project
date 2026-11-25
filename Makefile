@@ -72,7 +72,6 @@ SRC_FILES += \
   $(SDK_ROOT)/external/utf_converter/utf.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_pwm.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_gpiote.c \
-  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_timer.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_nvmc.c \
   $(SDK_ROOT)/components/softdevice/common/nrf_sdh.c \
   $(SDK_ROOT)/components/softdevice/common/nrf_sdh_soc.c \
@@ -168,6 +167,13 @@ CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 # keep every function in a separate section, this allows linker to discard unused ones
 CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing
 CFLAGS += -fno-builtin -fshort-enums
+
+# One-time erase of the saved color page on boot:
+#   make clean && make ERASE_COLOR=1 dfu   (then rebuild normally)
+ERASE_COLOR ?= 0
+ifeq ($(ERASE_COLOR),1)
+CFLAGS += -DERASE_COLOR_ON_BOOT
+endif
 
 # C++ flags common to all targets
 CXXFLAGS += $(OPT)

@@ -97,3 +97,9 @@ bool flash_storage_save(hsv_t hsv)
 
     return true;
 }
+
+
+void flash_storage_erase(void)
+{
+    app_error_check(nrfx_nvmc_page_erase(FLASH_STORAGE_PAGE_ADDR));
+}
