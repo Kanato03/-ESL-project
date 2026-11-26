@@ -187,7 +187,6 @@ void color_picker_on_button(button_event_t evt)
             if (m_adjusting && (m_mode != INPUT_MODE_NONE))
             {
                 g_color_changed = true;
-        g_color_save    = true;
             }
             m_adjusting   = false;
             m_step_acc_ms = 0;
